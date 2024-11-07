@@ -1,0 +1,21 @@
+﻿@page
+@model IdentityService.Pages.Admin.ManageUserRolesModel
+@{
+    ViewData["Title"] = "Manage User Roles";
+}
+
+<h2>Manage Roles for @Model.User.UserName</h2>
+
+<form method="post">
+    <ul>
+        @foreach (var role in Model.AllRoles)
+        {
+                <li>
+                    <input type="checkbox" name="SelectedRoles" value="@role.Name" 
+                @(Model.UserRoles.Contains(role.Name) ? "checked" : "") />
+                    <label>@role.Name</label>
+                </li>
+        }
+    </ul>
+    <button type="submit">Save Changes</button>
+</form>
