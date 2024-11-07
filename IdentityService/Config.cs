@@ -40,7 +40,7 @@ namespace IdentityService
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     RequireClientSecret = false,
 
-                    AllowedCorsOrigins = { "https://localhost:7120" },
+                    //AllowedCorsOrigins = { "https://localhost:7120" },
 
                     AllowOfflineAccess = true,
                     AccessTokenLifetime = 1800,

@@ -2,6 +2,7 @@
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer.EntityFramework.Storage;
 using IdentityService.Data;
+using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ namespace IdentityService.Endpoints
                 );
 
                 services
-                    .AddIdentity<IdentityUser, IdentityRole>()
+                    .AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<AspNetIdentityDbContext>()
                     .AddDefaultTokenProviders();
 

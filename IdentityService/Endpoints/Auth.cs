@@ -9,7 +9,7 @@ namespace IdentityService.Endpoints
     {
         public static void AccountEndpoints(this IEndpointRouteBuilder routes)
         {
-            var app = routes.MapGroup("/Auth");
+            var app = routes.MapGroup("/Account");
 
             app.MapPost("/Register", async (RegisterUserRequest request, UserManager<ApplicationUser> userManager, IIdentityServerInteractionService interaction, HttpContext httpContext) =>
             {
@@ -23,6 +23,11 @@ namespace IdentityService.Endpoints
                         FirstName = request.FirstName,
                         LastName = request.LasName
                     };
+                    var existingUserByEmail = userManager.FindByEmailAsync(user.Email);
+                    if (existingUserByEmail is not null)
+                    {
+                        return Results.BadRequest("Email is taken.");
+                    }
                     var result = await userManager.CreateAsync(user, request.Password);
 
                     if (result.Succeeded)
@@ -32,8 +37,6 @@ namespace IdentityService.Endpoints
                         {
                             DisplayName = user.UserName,
                         };
-
-                        await httpContext.SignInAsync(isUser);
 
                         return Results.Ok();
                     }

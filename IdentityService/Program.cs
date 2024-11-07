@@ -15,13 +15,12 @@ builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowWebApi", builder =>
+    options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("https://localhost:7120")
+            .AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+            .AllowAnyHeader();
     });
 });
 
@@ -50,7 +49,7 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowWebApi");
+app.UseCors("AllowAll");
 app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
