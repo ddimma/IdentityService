@@ -23,7 +23,7 @@ namespace IdentityService.Endpoints
                         FirstName = request.FirstName,
                         LastName = request.LasName
                     };
-                    var existingUserByEmail = userManager.FindByEmailAsync(user.Email);
+                    var existingUserByEmail = await userManager.FindByEmailAsync(user.Email);
                     if (existingUserByEmail is not null)
                     {
                         return Results.BadRequest("Email is taken.");
