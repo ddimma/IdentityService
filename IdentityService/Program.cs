@@ -64,7 +64,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
 });
 
-app.AccountEndpoints();
+app.MapAccountEndpoints();
 app.SeedDataEndpoints();
 
 app.Run();
