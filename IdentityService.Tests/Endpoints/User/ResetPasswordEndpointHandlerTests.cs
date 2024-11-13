@@ -4,6 +4,7 @@ using IdentityService.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -14,6 +15,10 @@ namespace IdentityService.Tests.Endpoints.User
     public class ResetPasswordEndpointHandlerTests
     {
         private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+        private readonly Moq.Language.Flow.ISetup<UserManager<ApplicationUser>, Task<IdentityResult>> _resetPasswordAsyncSetup;
+        private readonly Moq.Language.Flow.ISetup<UserManager<ApplicationUser>, Task<ApplicationUser>> _findByEmailAsyncSetup;
+        private readonly ApplicationUser _currentUser;
+        private readonly ResetPassword _defaultModel;
         public ResetPasswordEndpointHandlerTests() 
         {
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(
@@ -26,19 +31,25 @@ namespace IdentityService.Tests.Endpoints.User
                 new Mock<IdentityErrorDescriber>().Object,
                 new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
+
+            _defaultModel = new()
+            {
+                Email = "email@mail.com",
+                Code = "some token",
+                Password = "passwordddd",
+                ConfirmPassword = "passwordddd",
+            };
+            _currentUser = new ApplicationUser();
+
+            _resetPasswordAsyncSetup = _userManagerMock.Setup(c => c.ResetPasswordAsync(_currentUser, _defaultModel.Code, _defaultModel.Password));
+            _findByEmailAsyncSetup = _userManagerMock.Setup(c => c.FindByEmailAsync(_defaultModel.Email));
         }
         [Fact]
         public async Task ResetPassword_WhenUserUserWithThisEmailDoesNotExists_ReturnsBadRequestWithIdentityError() 
         {
             // Arrange
-            ResetPassword model = new()
-            {
-                Email = "email@mail.com",
-                Code = "some token",
-                Password = "Passworddd",
-                ConfirmPassword = "passwordddd",
-            };
-            _userManagerMock.Setup(c => c.FindByEmailAsync(model.Email)).Returns(async () => { return (null); });
+            _resetPasswordAsyncSetup
+                .ReturnsAsync(() => null);
 
             IResult expectedResult = Results.BadRequest(
                 new List<IdentityError> {
@@ -50,7 +61,7 @@ namespace IdentityService.Tests.Endpoints.User
             var expected = expectedResult as BadRequest<List<IdentityError>>;
 
             // Act
-            IResult actualResult = await  ResetPasswordEnpointHandler.ResetPassword(model, _userManagerMock.Object, new CancellationToken());
+            IResult actualResult = await  ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
             // Assert
             var actual = actualResult as BadRequest<List<IdentityError>>;
@@ -61,14 +72,11 @@ namespace IdentityService.Tests.Endpoints.User
         public async Task ResetPassword_WhenPasswordAndConfirmedPasswordDoNotMatch_ReturnsBadRequestWithIdentityError()
         {
             // Arrange
-            ResetPassword model = new()
-            {
-                Email = "email@mail.com",
-                Code = "some token",
-                Password = "Not a password",
-                ConfirmPassword = "passwordddd",
-            };
-            _userManagerMock.Setup(c => c.FindByEmailAsync(model.Email)).Returns( async () => { return new ApplicationUser { }; });
+            _defaultModel.Password = "some password";
+            _defaultModel.ConfirmPassword = "another password";
+
+            _findByEmailAsyncSetup
+                .ReturnsAsync (() => new ApplicationUser { });
 
             IResult expectedResult = Results.BadRequest(
                 new List<IdentityError> {
@@ -80,7 +88,7 @@ namespace IdentityService.Tests.Endpoints.User
             var expected = expectedResult as BadRequest<List<IdentityError>>;
 
             // Act
-            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(model, _userManagerMock.Object, new CancellationToken());
+            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
             // Assert
             var actual = actualResult as BadRequest<List<IdentityError>>;
@@ -91,26 +99,16 @@ namespace IdentityService.Tests.Endpoints.User
         public async Task ResetPassword_WhenIdentityResultSucceeded_ReturnsOk()
         {
             // Arrange
-            ResetPassword model = new()
-            {
-                Email = "email@mail.com",
-                Code = "some token",
-                Password = "passwordddd",
-                ConfirmPassword = "passwordddd",
-            };
-            ApplicationUser user = new ApplicationUser();
-            _userManagerMock.Setup(c => c.FindByEmailAsync(model.Email)).Returns(async () => { return user; });
-            _userManagerMock.Setup(c => c.ResetPasswordAsync(user, model.Code, model.Password))
-                .Returns(async () =>
-                {
-                    return IdentityResult.Success;
-                });
+            _findByEmailAsyncSetup
+                .ReturnsAsync(() => _currentUser);
+            _resetPasswordAsyncSetup
+                .ReturnsAsync(() =>IdentityResult.Success);
 
             IResult expectedResult = Results.Ok();
             var expected = expectedResult as Ok;
 
             // Act
-            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(model, _userManagerMock.Object, new CancellationToken());
+            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
             // Assert
             var actual = actualResult as Ok;
@@ -121,16 +119,9 @@ namespace IdentityService.Tests.Endpoints.User
         public async Task ResetPassword_WhenIdentityResultSucceeded_ReturnsBadRequestWithErrors()
         {
             // Arrange
-            ResetPassword model = new()
-            {
-                Email = "email@mail.com",
-                Code = "some token",
-                Password = "passwordddd",
-                ConfirmPassword = "passwordddd",
-            };
 
-            ApplicationUser user = new ApplicationUser();
-            _userManagerMock.Setup(c => c.FindByEmailAsync(model.Email)).Returns(async () => { return user; });
+            _findByEmailAsyncSetup
+                .ReturnsAsync(() => _currentUser);
 
             IdentityErrorDescriber descr = new IdentityErrorDescriber();
             IdentityResult identityResult = IdentityResult.Failed(new IdentityError[]
@@ -138,16 +129,14 @@ namespace IdentityService.Tests.Endpoints.User
                         descr.PasswordTooShort(6),
                         descr.InvalidToken()
                     });
-            _userManagerMock.Setup(c => c.ResetPasswordAsync(user, model.Code, model.Password))
-                .Returns(async () =>
-                {
-                    return identityResult;
-                });
+            _userManagerMock.Setup(c => c.ResetPasswordAsync(_currentUser, _defaultModel.Code, _defaultModel.Password))
+                .ReturnsAsync (() => identityResult);
 
             IResult expectedResult = Results.BadRequest(identityResult.Errors);
             var expected = expectedResult as BadRequest<List<IdentityError>>;
+
             // Act
-            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(model, _userManagerMock.Object, new CancellationToken());
+            IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
             // Assert
             var actual = actualResult as BadRequest<List<IdentityError>>;
