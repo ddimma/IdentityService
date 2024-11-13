@@ -59,11 +59,13 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
 });
 
+app.AccountEndpoints();
 app.MapAccountEndpoints();
 app.SeedDataEndpoints();
 
