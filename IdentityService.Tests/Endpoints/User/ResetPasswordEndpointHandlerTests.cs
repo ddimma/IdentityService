@@ -43,7 +43,7 @@ public class ResetPasswordEndpointHandlerTests
         _findByEmailAsyncSetup = _userManagerMock.Setup(c => c.FindByEmailAsync(_defaultModel.Email));
     }
     [Fact]
-    public async Task ResetPassword_WhenUserUserWithThisEmailDoesNotExists_ReturnsBadRequestWithIdentityError() 
+    public async Task ResetPassword_WhenUserWithThisEmailDoesNotExists_ReturnsBadRequestWithIdentityError() 
     {
         // Arrange
         _resetPasswordAsyncSetup
@@ -59,7 +59,7 @@ public class ResetPasswordEndpointHandlerTests
         var expected = expectedResult as BadRequest<List<IdentityError>>;
 
         // Act
-        IResult actualResult = await  ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
+        IResult actualResult = await  ResetPasswordEndpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
         // Assert
         var actual = actualResult as BadRequest<List<IdentityError>>;
@@ -86,7 +86,7 @@ public class ResetPasswordEndpointHandlerTests
         var expected = expectedResult as BadRequest<List<IdentityError>>;
 
         // Act
-        IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
+        IResult actualResult = await ResetPasswordEndpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
         // Assert
         var actual = actualResult as BadRequest<List<IdentityError>>;
@@ -106,7 +106,7 @@ public class ResetPasswordEndpointHandlerTests
         var expected = expectedResult as Ok;
 
         // Act
-        IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
+        IResult actualResult = await ResetPasswordEndpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
         // Assert
         var actual = actualResult as Ok;
@@ -134,7 +134,7 @@ public class ResetPasswordEndpointHandlerTests
         var expected = expectedResult as BadRequest<List<IdentityError>>;
 
         // Act
-        IResult actualResult = await ResetPasswordEnpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
+        IResult actualResult = await ResetPasswordEndpointHandler.ResetPassword(_defaultModel, _userManagerMock.Object, new CancellationToken());
 
         // Assert
         var actual = actualResult as BadRequest<List<IdentityError>>;

@@ -1,9 +1,10 @@
 ﻿using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace IdentityService.Endpoints.User;
 
-public class ResetPasswordEnpointHandler
+public class ResetPasswordEndpointHandler
 {
     public static async Task<IResult> ResetPassword(ResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancellationToken) 
     {
@@ -27,7 +28,6 @@ public class ResetPasswordEnpointHandler
                 Description = "The password and confirmation password do not match."
             }});
         }
-
         IdentityResult result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
         
         return result.Succeeded ? Results.Ok() : Results.BadRequest(result.Errors);
