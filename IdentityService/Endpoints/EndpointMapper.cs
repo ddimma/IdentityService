@@ -12,6 +12,7 @@ namespace IdentityService.Endpoints
         {
             var app = routes.MapGroup("/Account");
             app.MapPost("/ResetPassword",async (ResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancelationToken) => await ResetPasswordEnpointHandler.ResetPassword(model,userManager, cancelationToken));
+            app.MapPost("/RequestResetPassword",async (RequestResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancelationToken) => await RequestResetPasswordEndpointHandler.RequestResetPassword(model,userManager, cancelationToken));
         }
     }
 }
