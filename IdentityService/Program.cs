@@ -33,6 +33,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<AspNetIdentityDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromMinutes(5);
+});
+
 builder.Services.AddIdentityServer()
     .AddAspNetIdentity<ApplicationUser>()
     .AddConfigurationStore(options =>
@@ -65,6 +70,7 @@ app.UseEndpoints(endpoints =>
 });
 
 app.AccountEndpoints();
+app.MapAccountEndpoints();
 app.SeedDataEndpoints();
 
 app.Run();
