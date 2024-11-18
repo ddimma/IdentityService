@@ -1,40 +1,35 @@
-﻿using Duende.IdentityServer;
-using Duende.IdentityServer.Models;
-
-namespace IdentityService
+﻿namespace IdentityService
 {
     public static class Config
     {
         public static IEnumerable<IdentityResource> IdentityResources =>
-            new[]
+        [
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+            new()
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResource
-                {
-                    Name = "role",
-                    UserClaims = new List<string> {"role"}
-                }
-            };
-
-        public static IEnumerable<ApiScope> ApiScopes => 
-            new[] { new ApiScope("API.read"), new ApiScope("API.write"), };
-
-        public static IEnumerable<ApiResource> ApiResources => new[]
-        {
-            new ApiResource("API")
-            {
-                Scopes = new List<string> {"API.read", "API.write"},
-                ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
-                UserClaims = new List<string> {"role"}
+                Name = "role",
+                UserClaims = new List<string> { "role" }
             }
-        };
+        ];
+
+        public static IEnumerable<ApiScope> ApiScopes =>
+            [new("API.read"), new("API.write")];
+
+        public static IEnumerable<ApiResource> ApiResources =>
+        [
+            new("API")
+            {
+                Scopes = new List<string> { "API.read", "API.write" },
+                ApiSecrets = new List<Secret> { new("ScopeSecret".Sha256()) },
+                UserClaims = new List<string> { "role" }
+            }
+        ];
 
         public static IEnumerable<Client> Clients =>
-            new[]
+        [
+            new()
             {
-                new Client
-                {
                     ClientId = "android_webapi",
                     ClientName = "Andoid",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -61,6 +56,6 @@ namespace IdentityService
                     AllowAccessTokensViaBrowser = true,
                     RequireConsent = false
                 }
-            };
+        ];
     }
 }

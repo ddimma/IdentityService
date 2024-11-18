@@ -1,9 +1,3 @@
-using IdentityService.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using IdentityService.Endpoints;
-using IdentityService.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 var assembly = typeof(Program).Assembly.GetName().Name;
@@ -13,11 +7,17 @@ builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
     options.UseSqlServer(defaultConnectionString,
     b => b.MigrationsAssembly(assembly)));
 
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", corsPolicyBuilder =>
     {
-        builder
+        corsPolicyBuilder
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
@@ -69,8 +69,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
 });
 
-app.AccountEndpoints();
 app.MapAccountEndpoints();
-app.SeedDataEndpoints();
-
+app.MapApplicationEndpoints();
 app.Run();
