@@ -4,7 +4,7 @@ public static class ResetPasswordEndpointHandler
 {
     public static async Task<IResult> ResetPassword(ResetPasswordCommand request, IMediator mediator, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(request, cancellationToken) as IResult;
+        var result = await mediator.Send(request, cancellationToken);
         return result;
     }
 }

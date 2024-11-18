@@ -11,51 +11,12 @@ builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
     b => b.MigrationsAssembly(assembly)));
 
 builder.Services.AddAppSettingsConfiguration(appConfiguration);
-
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", corsPolicyBuilder =>
-    {
-        corsPolicyBuilder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    options.User.RequireUniqueEmail = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 8;
-})
-    .AddEntityFrameworkStores<AspNetIdentityDbContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
-{
-    options.TokenLifespan = TimeSpan.FromMinutes(5);
-});
-
-builder.Services.AddIdentityServer()
-    .AddAspNetIdentity<ApplicationUser>()
-    .AddConfigurationStore(options =>
-    {
-        options.ConfigureDbContext = b =>
-        b.UseSqlServer(defaultConnectionString, opt => opt.MigrationsAssembly(assembly));
-    })
-    .AddOperationalStore(options =>
-    {
-        options.ConfigureDbContext = b =>
-        b.UseSqlServer(defaultConnectionString, opt => opt.MigrationsAssembly(assembly));
-    })
-    .AddDeveloperSigningCredential();
-
+builder.Services.AddIdentityService(defaultConnectionString, assembly);
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
@@ -68,11 +29,7 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapDefaultControllerRoute();
-});
-
+app.MapDefaultControllerRoute();
 app.MapAccountEndpoints(appConfiguration);
 app.MapApplicationEndpoints();
 app.Run();
