@@ -16,3 +16,4 @@ global using IdentityService.CQRS.User.ResetPassword;
 global using IdentityService.Endpoints.Application;
 global using IdentityService.Endpoints.User;
 global using MediatR;
+global using System.ComponentModel.DataAnnotations;

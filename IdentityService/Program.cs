@@ -1,12 +1,16 @@
+using IdentityService.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var assembly = typeof(Program).Assembly.GetName().Name;
 var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var appConfiguration = builder.Configuration;
 
 builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
     options.UseSqlServer(defaultConnectionString,
     b => b.MigrationsAssembly(assembly)));
 
+builder.Services.AddAppSettingsConfiguration(appConfiguration);
 
 builder.Services.AddMediatR(cfg =>
 {
@@ -69,6 +73,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
 });
 
-app.MapAccountEndpoints();
+app.MapAccountEndpoints(appConfiguration);
 app.MapApplicationEndpoints();
 app.Run();

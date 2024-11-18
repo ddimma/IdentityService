@@ -1,21 +1,26 @@
-﻿namespace IdentityService.Endpoints;
+﻿using IdentityService.Models;
+
+namespace IdentityService.Endpoints;
 
 public static class EndpointMapper
 {
-    public static void MapAccountEndpoints(this IEndpointRouteBuilder routes) 
+    public static void MapAccountEndpoints(this IEndpointRouteBuilder routes, IConfiguration configuration) 
     {
-        var app = routes.MapGroup("/Account");
+        var routeSettingsValue = configuration.GetSection("RouteSettings").Get<RouteSettings>();
+        if (routeSettingsValue == null) throw new ArgumentNullException(nameof(routeSettingsValue));
+        
+        var app = routes.MapGroup(routeSettingsValue.AccountApiGroup);
 
-        app.MapPost("/Register",
+        app.MapPost(routeSettingsValue.RegisterEndPoint,
             async (RegisterUserCommand model, IMediator mediator, CancellationToken cancellationToken) =>
                 await RegisterUserEndpointHandler.RegisterUser(model, mediator, cancellationToken));
             
-        app.MapPost("/ResetPassword",
+        app.MapPost(routeSettingsValue.ResetPasswordEndpoint,
             async (ResetPasswordCommand model, IMediator mediator,
                     CancellationToken cancellationToken) =>
                 await ResetPasswordEndpointHandler.ResetPassword(model, mediator, cancellationToken));
 
-        app.MapPost("/RequestResetPassword",
+        app.MapPost(routeSettingsValue.RequestResetPasswordEndpoint,
             async (RequestResetPasswordCommand model, IMediator mediator,
                     CancellationToken cancellationToken) =>
                 await RequestResetPasswordEndpointHandler.RequestResetPassword(model, mediator,
