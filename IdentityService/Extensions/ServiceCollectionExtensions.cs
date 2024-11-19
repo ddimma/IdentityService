@@ -2,8 +2,16 @@
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddIdentityService(this IServiceCollection services, string? connectionString, string? assemblyName)
+    public static IServiceCollection InitializeAppConfig(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        Config.Initialize(configuration);
+        return serviceCollection;
+    }
+    public static IServiceCollection AddIdentityService(this IServiceCollection services, IConfiguration configuration, string? connectionString, string? assemblyName)
+    {
+        var identitySettings = new IdentitySettings();
+        configuration.GetSection("IdentitySettings").Bind(identitySettings);
+        
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", corsPolicyBuilder =>
@@ -17,11 +25,11 @@ public static class ServiceCollectionExtensions
         
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = identitySettings.RequireUniqueEmail;
+                options.Password.RequireNonAlphanumeric = identitySettings.RequireNonAlphanumericPassword;
+                options.Password.RequiredLength = identitySettings.RequiredLengthPassword;
             })
-            .AddEntityFrameworkStores<AspNetIdentityDbContext>()
+            .AddEntityFrameworkStores<AspNetIdentityDbContext>()    
             .AddDefaultTokenProviders();
 
         services.Configure<DataProtectionTokenProviderOptions>(options =>

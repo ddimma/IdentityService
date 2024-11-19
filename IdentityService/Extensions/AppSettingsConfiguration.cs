@@ -10,6 +10,14 @@ public static class AppSettingsConfiguration
         services.AddOptions<RouteSettings>()
             .Bind(configuration.GetSection("RouteSettings"))
             .ValidateDataAnnotations();
+        
+        services.AddOptions<IdentitySettings>()
+            .Bind(configuration.GetSection("IdentitySettings"))
+            .ValidateDataAnnotations();
+        
+        services.AddOptions<IdentityServerSettings>()
+            .Bind(configuration.GetSection("IdentityServerSettings"))
+            .ValidateDataAnnotations();
 
         return services;
     }

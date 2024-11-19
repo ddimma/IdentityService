@@ -17,3 +17,5 @@ global using IdentityService.Endpoints.Application;
 global using IdentityService.Endpoints.User;
 global using MediatR;
 global using System.ComponentModel.DataAnnotations;
+global using IdentityService.Models;
+global using IdentityService.Extensions;
