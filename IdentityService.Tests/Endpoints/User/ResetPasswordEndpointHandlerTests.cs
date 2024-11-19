@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using FluentAssertions;
 using IdentityService.CQRS.User.ResetPassword;
 using IdentityService.Endpoints.User;
 using IdentityService.Entities;
@@ -23,6 +24,8 @@ public class ResetPasswordEndpointHandlerTests
     private readonly ResetPasswordCommand _defaultModel;
     public ResetPasswordEndpointHandlerTests() 
     {
+        var autoFixture = new Fixture();
+        
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
             new Mock<IUserStore<ApplicationUser>>().Object,
             new Mock<IOptions<IdentityOptions>>().Object,
@@ -35,20 +38,20 @@ public class ResetPasswordEndpointHandlerTests
             new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
 
         _mediatorMock = new Mock<IMediator>();
-
-        _defaultModel = new ResetPasswordCommand
-        {
-            Email = "email@mail.com",
-            Code = "some token",
-            Password = "passwordddd",
-            ConfirmPassword = "passwordddd",
-        };
         
-        _currentUser = new ApplicationUser
-        {
-            FirstName = "TestingName",
-            LastName = "TestingLastName",
-        };
+        var randomPassword = autoFixture.Create<string>();
+        autoFixture.Customize<ResetPasswordCommand>(c => c
+                .With(x => x.Email, $"{autoFixture.Create<string>()}@mail.com")
+                .With(x => x.Code, autoFixture.Create<string>())
+                .With(x => x.Password, randomPassword)
+                .With(x => x.ConfirmPassword, randomPassword)
+        );
+
+        _defaultModel = autoFixture.Create<ResetPasswordCommand>();
+        _currentUser = autoFixture.Build<ApplicationUser>()
+            .With(x => x.FirstName, autoFixture.Create<string>())
+            .With(x => x.LastName, autoFixture.Create<string>())
+            .Create();
 
         _resetPasswordAsyncSetup = _userManagerMock.Setup(c => c.ResetPasswordAsync(_currentUser, _defaultModel.Code, _defaultModel.Password));
         _findByEmailAsyncSetup = _userManagerMock.Setup(c => c.FindByEmailAsync(_defaultModel.Email));
