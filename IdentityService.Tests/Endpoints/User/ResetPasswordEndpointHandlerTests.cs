@@ -3,6 +3,7 @@ using FluentAssertions;
 using IdentityService.CQRS.User.ResetPassword;
 using IdentityService.Endpoints.User;
 using IdentityService.Entities;
+using IdentityService.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -96,7 +97,7 @@ public class ResetPasswordEndpointHandlerTests
             new()
             {
                 Code = "Password",
-                Description = "The password and confirmation password do not match."
+                Description = CodeDescriptions.PasswordCodeDescription
             }
         };
 
