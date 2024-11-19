@@ -12,7 +12,7 @@ public class RequestResetPasswordHandler(UserManager<ApplicationUser> userManage
                 {
                     new()
                     {
-                        Code = "User",
+                        Code = CodeDescriptions.UserCode,
                         Description = CodeDescriptions.UserCodeDescription
                     }
                 });

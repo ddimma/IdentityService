@@ -65,8 +65,8 @@ public class ResetPasswordEndpointHandlerTests
         {
             new()
             {
-                Code = "User",
-                Description = "This user does not exists"
+                Code = CodeDescriptions.UserCode,
+                Description = CodeDescriptions.UserCodeDescription
             }
         };
 
@@ -96,7 +96,7 @@ public class ResetPasswordEndpointHandlerTests
         {
             new()
             {
-                Code = "Password",
+                Code = CodeDescriptions.PasswordCode,
                 Description = CodeDescriptions.PasswordCodeDescription
             }
         };

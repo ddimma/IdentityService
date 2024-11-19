@@ -12,7 +12,7 @@ public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManage
                 {
                     new()
                     {
-                        Code = "User",
+                        Code = CodeDescriptions.UserCode,
                         Description = CodeDescriptions.UserCodeDescription
                     }
                 });
@@ -24,7 +24,7 @@ public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManage
             {
                 new()
                 {
-                    Code = "Password",
+                    Code = CodeDescriptions.PasswordCode,
                     Description = CodeDescriptions.PasswordCodeDescription
                 }
             });
