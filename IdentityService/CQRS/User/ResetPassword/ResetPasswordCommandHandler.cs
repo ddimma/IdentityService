@@ -2,9 +2,6 @@
 
 public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManager) : IRequestHandler<ResetPasswordCommand, IResult>
 {
-    private const string UserCodeDescription = "This user does not exists";
-    private const string PasswordCodeDescription = "The password and confirmation password do not match.";
-
     public async Task<IResult> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
@@ -16,7 +13,7 @@ public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManage
                     new()
                     {
                         Code = "User",
-                        Description = UserCodeDescription
+                        Description = CodeDescriptions.UserCodeDescription
                     }
                 });
         }
@@ -28,7 +25,7 @@ public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManage
                 new()
                 {
                     Code = "Password",
-                    Description = PasswordCodeDescription
+                    Description = CodeDescriptions.PasswordCodeDescription
                 }
             });
         }

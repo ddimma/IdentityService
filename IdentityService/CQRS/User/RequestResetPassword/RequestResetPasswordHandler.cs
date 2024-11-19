@@ -13,7 +13,7 @@ public class RequestResetPasswordHandler(UserManager<ApplicationUser> userManage
                     new()
                     {
                         Code = "User",
-                        Description = "This user does not exists"
+                        Description = CodeDescriptions.UserCodeDescription
                     }
                 });
         }
