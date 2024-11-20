@@ -1,18 +1,36 @@
-﻿using IdentityService.Endpoints.User;
-using IdentityService.Models;
+﻿namespace IdentityService.Endpoints;
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal;
-
-namespace IdentityService.Endpoints
+public static class EndpointMapper
 {
-    public static class EndpointMapper
+    public static void MapAccountEndpoints(this IEndpointRouteBuilder routes, IConfiguration configuration) 
     {
-        public static void MapAccountEndpoints(this IEndpointRouteBuilder routes) 
-        {
-            var app = routes.MapGroup("/Account");
-            app.MapPost("/ResetPassword",async (ResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancelationToken) => await ResetPasswordEndpointHandler.ResetPassword(model,userManager, cancelationToken));
-            app.MapPost("/RequestResetPassword",async (RequestResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancelationToken) => await RequestResetPasswordEndpointHandler.RequestResetPassword(model,userManager, cancelationToken));
-        }
+        var routeSettingsValue = configuration.GetSection("RouteSettings").Get<RouteSettings>();
+        if (routeSettingsValue == null) throw new ArgumentNullException(nameof(routeSettingsValue));
+        
+        var app = routes.MapGroup(routeSettingsValue.AccountApiGroup);
+
+        app.MapPost(routeSettingsValue.RegisterEndPoint,
+            async (RegisterUserCommand model, IMediator mediator, CancellationToken cancellationToken) =>
+                await RegisterUserEndpointHandler.RegisterUser(model, mediator, cancellationToken));
+            
+        app.MapPost(routeSettingsValue.ResetPasswordEndPoint,
+            async (ResetPasswordCommand model, IMediator mediator,
+                    CancellationToken cancellationToken) =>
+                await ResetPasswordEndpointHandler.ResetPassword(model, mediator, cancellationToken));
+
+        app.MapPost(routeSettingsValue.RequestResetPasswordEndPoint,
+            async (RequestResetPasswordCommand model, IMediator mediator,
+                    CancellationToken cancellationToken) =>
+                await RequestResetPasswordEndpointHandler.RequestResetPassword(model, mediator,
+                    cancellationToken));
+    }
+
+    public static void MapApplicationEndpoints(this IEndpointRouteBuilder routes)
+    {
+        var app = routes.MapGroup("/Seed");
+
+        app.MapGet("",
+            async (IConfiguration configuration) =>
+                await SeedEndpointHandler.Seed(configuration));
     }
 }

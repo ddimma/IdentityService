@@ -4,7 +4,7 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using IdentityService.Models;
+using IdentityService.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -76,8 +76,17 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
-            var user = new ApplicationUser { UserName = Input.UserName };
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            var user = new ApplicationUser
+            {
+                UserName = Input.UserName,
+                FirstName = "TestingName",
+                LastName = "TestingLastName"
+            };
+            
+            if (Input.Password != null)
+            {
+                var result = await _userManager.CreateAsync(user, Input.Password);
+            }
 
             // issue authentication cookie with subject ID and username
             var isuser = new IdentityServerUser(user.Id)

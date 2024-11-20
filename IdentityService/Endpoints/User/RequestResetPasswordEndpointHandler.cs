@@ -1,31 +1,12 @@
-﻿using IdentityService.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using IdentityService.CQRS.User.Commands.RequestResetPassword;
 
-namespace IdentityService.Endpoints.User
+namespace IdentityService.Endpoints.User;
+
+public static class RequestResetPasswordEndpointHandler
 {
-    public class RequestResetPasswordEndpointHandler
+    public static async Task<IResult> RequestResetPassword(RequestResetPasswordCommand request, IMediator mediator, CancellationToken cancellationToken)
     {
-        public static async Task<IResult> RequestResetPassword(RequestResetPassword model, UserManager<ApplicationUser> userManager, CancellationToken cancellationToken)
-        {
-            ApplicationUser? user = await userManager.FindByEmailAsync(model.Email);
-            if (user is null)
-            {
-                return Results.BadRequest(
-                    new List<IdentityError>{new IdentityError
-                    {
-                        Code = "User",
-                        Description = "This user does not exists"
-                    }
-                });
-            }
-
-            var token = await userManager.GeneratePasswordResetTokenAsync(user);
-
-            return Results.Ok(new
-            {
-                isSuccess = true,
-                result = new { hash = token }
-            });
-        }
+        var result = await mediator.Send(request, cancellationToken);
+        return result;
     }
 }
