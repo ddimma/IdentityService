@@ -1,6 +1,4 @@
-﻿using IdentityService.Models;
-
-namespace IdentityService.Endpoints;
+﻿namespace IdentityService.Endpoints;
 
 public static class EndpointMapper
 {
@@ -15,12 +13,12 @@ public static class EndpointMapper
             async (RegisterUserCommand model, IMediator mediator, CancellationToken cancellationToken) =>
                 await RegisterUserEndpointHandler.RegisterUser(model, mediator, cancellationToken));
             
-        app.MapPost(routeSettingsValue.ResetPasswordEndpoint,
+        app.MapPost(routeSettingsValue.ResetPasswordEndPoint,
             async (ResetPasswordCommand model, IMediator mediator,
                     CancellationToken cancellationToken) =>
                 await ResetPasswordEndpointHandler.ResetPassword(model, mediator, cancellationToken));
 
-        app.MapPost(routeSettingsValue.RequestResetPasswordEndpoint,
+        app.MapPost(routeSettingsValue.RequestResetPasswordEndPoint,
             async (RequestResetPasswordCommand model, IMediator mediator,
                     CancellationToken cancellationToken) =>
                 await RequestResetPasswordEndpointHandler.RequestResetPassword(model, mediator,

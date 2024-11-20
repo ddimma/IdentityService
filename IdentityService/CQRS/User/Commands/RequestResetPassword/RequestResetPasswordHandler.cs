@@ -1,4 +1,4 @@
-﻿namespace IdentityService.CQRS.User.RequestResetPassword;
+﻿namespace IdentityService.CQRS.User.Commands.RequestResetPassword;
 
 public class RequestResetPasswordHandler(UserManager<ApplicationUser> userManager) : IRequestHandler<RequestResetPasswordCommand, IResult>
 {

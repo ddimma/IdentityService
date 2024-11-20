@@ -1,4 +1,4 @@
-﻿namespace IdentityService.CQRS.User.ResetPassword;
+﻿namespace IdentityService.CQRS.User.Commands.ResetPassword;
 
 public class ResetPasswordCommand: IRequest<IResult>
 {

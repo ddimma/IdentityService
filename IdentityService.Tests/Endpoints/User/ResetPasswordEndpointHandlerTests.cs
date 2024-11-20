@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using IdentityService.CQRS.User.ResetPassword;
+using IdentityService.CQRS.User.Commands.ResetPassword;
 using IdentityService.Endpoints.User;
 using IdentityService.Entities;
 using IdentityService.Models;
@@ -88,7 +88,6 @@ public class ResetPasswordEndpointHandlerTests
     [Fact]
     public async Task ResetPassword_WhenPasswordAndConfirmedPasswordDoNotMatch_ReturnsBadRequestWithIdentityError()
     {
-        // Arrange
         _defaultModel.Password = "some password";
         _defaultModel.ConfirmPassword = "another password";
 

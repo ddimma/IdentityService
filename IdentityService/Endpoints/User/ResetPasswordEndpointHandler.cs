@@ -1,4 +1,6 @@
-﻿namespace IdentityService.Endpoints.User;
+﻿using IdentityService.CQRS.User.Commands.ResetPassword;
+
+namespace IdentityService.Endpoints.User;
 
 public static class ResetPasswordEndpointHandler
 {

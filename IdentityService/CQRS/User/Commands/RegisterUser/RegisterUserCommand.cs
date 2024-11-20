@@ -1,4 +1,4 @@
-﻿namespace IdentityService.CQRS.User.RegisterUser;
+﻿namespace IdentityService.CQRS.User.Commands.RegisterUser;
 
 public class RegisterUserCommand : IRequest<IResult>
 {
